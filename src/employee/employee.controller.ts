@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Employee } from './employees.entity';
 
@@ -9,5 +9,17 @@ export class EmployeeController {
   @Post()
   async createEmployee(@Body() employeeData: Partial<Employee>) {
     return await this.employeeService.create(employeeData);
+  }
+
+  // GET /employee → get all employees
+  @Get()
+  async getAllEmployees(): Promise<Employee[]> {
+    return await this.employeeService.findAll();
+  }
+
+  // GET /employee/:id → get one employee by ID
+  @Get(':id')
+  async getEmployeeById(@Param('id') id: number): Promise<Employee> {
+    return await this.employeeService.findOne(id);
   }
 }
