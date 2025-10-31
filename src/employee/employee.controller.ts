@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Employee } from './employees.entity';
 
@@ -28,5 +28,13 @@ export class EmployeeController {
     @Body() updateData: Partial<Employee>,
   ) {
     return await this.employeeService.update(id, updateData);
+  }
+  @Delete(':id')
+  async deleteEmployee(@Param('id') id: number) {
+    const result = await this.employeeService.delete(id);
+    return {
+      success: true,
+      message: result.message,
+    };
   }
 }
