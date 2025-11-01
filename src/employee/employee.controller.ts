@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Employee } from './employees.entity';
 
@@ -11,17 +11,28 @@ export class EmployeeController {
     return await this.employeeService.create(employeeData);
   }
 
-  // GET /employee → get all employees
+  // ✅ Search first (so it doesn’t get caught by :id)
+  @Get('search')
+  async searchEmployee(
+    @Query('name') name?: string,
+    @Query('position') position?: string,
+    @Query('department') department?: string,
+  ): Promise<Employee[]> {
+    return await this.employeeService.search({ name, position, department });
+  }
+
+  // ✅ Get all employees
   @Get()
   async getAllEmployees(): Promise<Employee[]> {
     return await this.employeeService.findAll();
   }
 
-  // GET /employee/:id → get one employee by ID
+  // ✅ Get one employee by ID (must come after 'search')
   @Get(':id')
   async getEmployeeById(@Param('id') id: number): Promise<Employee> {
     return await this.employeeService.findOne(id);
   }
+
   @Put(':id')
   async updateEmployee(
     @Param('id') id: number,
@@ -29,12 +40,10 @@ export class EmployeeController {
   ) {
     return await this.employeeService.update(id, updateData);
   }
+
   @Delete(':id')
   async deleteEmployee(@Param('id') id: number) {
     const result = await this.employeeService.delete(id);
-    return {
-      success: true,
-      message: result.message,
-    };
+    return { success: true, message: result.message };
   }
 }
